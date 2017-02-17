@@ -1,0 +1,6 @@
+.idea
+.env
+vendor/
+*.sql
+composer.phar
+.user.ini
