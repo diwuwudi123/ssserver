@@ -26,9 +26,11 @@ class XCat
     {
         switch ($this->argv[1]) {
             case("install"):
-                return $this->install();
+                break;
+                //return $this->install();
             case("createAdmin"):
-                return $this->createAdmin();
+                break;
+                //return $this->createAdmin();
             case("resetTraffic"):
                 return $this->resetTraffic();
             case("sendDiaryMail"):
@@ -98,7 +100,7 @@ class XCat
     public function disable_expired_account(){
         try {
             User::where("enable", 1)
-            ->where('validity_period >=', date('Ymd'))
+            ->where('validity_period', '<=', date('Ymd'))
             ->update([
                 'enable' => 0,
             ]);
@@ -106,7 +108,8 @@ class XCat
             echo $e->getMessage();
             return false;
         }
-        return "disable  successful";
+        echo "disable  successful--". date('Y-m-d H:i:s');
+        echo "\n";
     }
 
     /**
@@ -125,6 +128,7 @@ class XCat
             echo $e->getMessage();
             return false;
         }
-        return "reset traffic successful";
+        echo "reset traffic successful---". date('Y-m-d H:i:s');
+        echo "\n";
     }
 }
