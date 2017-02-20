@@ -33,6 +33,8 @@ class XCat
                 return $this->resetTraffic();
             case("sendDiaryMail"):
                 return DailyMail::sendDailyMail();
+            case('disable_expired_account'):
+                return $this->disable_expired_account();
             default:
                 return $this->defaultAction();
         }
@@ -88,6 +90,30 @@ class XCat
         return false;
     }
 
+    /**
+     * 禁用过期账户
+     * @Author   wudi<wudi@meizu.com>
+     * @Datetime 2017-02-20
+     */
+    public function disable_expired_account(){
+        try {
+            User::where("enable", 1)
+            ->where('validity_period >=', date('Ymd'))
+            ->update([
+                'enable' => 0,
+            ]);
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+            return false;
+        }
+        return "disable  successful";
+    }
+
+    /**
+     * 重置可用流量
+     * @Author   wudi<wudi@meizu.com>
+     * @Datetime 2017-02-20
+     */
     public function resetTraffic()
     {
         try {
