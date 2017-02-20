@@ -91,10 +91,17 @@ class UserController extends BaseController
 
     public function invite($request, $response, $args)
     {
-        $codes = $this->user->inviteCodes();
-        return $this->view()->assign('codes', $codes)->display('user/invite.tpl');
+                $codes = $this->user->inviteCodes();
+                return $this->view()->assign('codes', $codes)->display('user/invite.tpl');
     }
+    public function check_invite(){
+        if ($this->user->isAdmin){
+            return true;
+        } else {
+            return false;
+        }
 
+    }
     public function doInvite($request, $response, $args)
     {
         $n = $request->getParam('num');
