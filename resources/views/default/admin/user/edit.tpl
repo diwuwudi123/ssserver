@@ -1,5 +1,9 @@
 {include file='admin/main.tpl'}
 
+<script src="/assets/public/js/bootstrap-datetimepicker.min.js"></script>
+<link href="/assets/public/css/bootstrap-datetimepicker.min.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="/assets/public/js/locales/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
@@ -57,6 +61,13 @@
 
                                         <div class="col-sm-9">
                                             <input class="form-control" id="pass" value="" placeholder="不修改时留空">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-sm-3 control-label">用户有效期</label>
+
+                                        <div class="col-sm-9">
+                                            <input class="form-control" id="validity_period" value="{date('Y-m-d', strtotime($user->validity_period))}" placeholder="用户有效期">
                                         </div>
                                     </div>
 
@@ -187,6 +198,15 @@
 
 <script>
     $(document).ready(function () {
+        $('#validity_period').datetimepicker({
+            format: 'yyyy-mm-dd',
+            minView: 2,
+            language: 'zh-CN',
+            autoclose: true,
+            onSelect:function(dateText,ist){
+                alert(dateText)
+            }
+        })
         function submit() {
             $.ajax({
                 type: "PUT",
@@ -203,7 +223,8 @@
                     method: $("#method").val(),
                     enable: $("#enable").val(),
                     is_admin: $("#is_admin").val(),
-                    ref_by: $("#ref_by").val()
+                    ref_by: $("#ref_by").val(),
+                    validity_period: $("#validity_period").val(),
                 },
                 success: function (data) {
                     if (data.ret) {

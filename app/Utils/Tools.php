@@ -205,4 +205,16 @@ class Tools
         }
         return $user->port;
     }
+
+    /**
+     * 转换时间格式
+     * @Author   wudi<wudi@meizu.com>
+     * @Datetime 2017-02-22
+     * @param    当前时间               $date   字符串
+     * @param    转换的格式               $format 格式
+     */
+    public static function todate($date, $format = 'Ymd'){
+        $time = strtotime($date);
+        return date($format, $time);
+    }
 }

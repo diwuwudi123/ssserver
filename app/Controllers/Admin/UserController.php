@@ -45,13 +45,15 @@ class UserController extends AdminController
         if ($request->getParam('passwd') != '') {
             $user->passwd = $request->getParam('passwd');
         }
-        $user->port = $request->getParam('port');
-        $user->transfer_enable = Tools::toGB($request->getParam('transfer_enable'));
-        $user->invite_num = $request->getParam('invite_num');
-        $user->method = $request->getParam('method');
-        $user->enable = $request->getParam('enable');
-        $user->is_admin = $request->getParam('is_admin');
-        $user->ref_by = $request->getParam('ref_by');
+        $user->port             = $request->getParam('port');
+        $user->transfer_enable  = Tools::toGB($request->getParam('transfer_enable'));
+        $user->invite_num       = $request->getParam('invite_num');
+        $user->method           = $request->getParam('method');
+        $user->enable           = $request->getParam('enable');
+        $user->is_admin         = $request->getParam('is_admin');
+        $user->ref_by           = $request->getParam('ref_by');
+        $user->validity_period  = Tools::todate($request->getParam('validity_period'));
+        
         if (!$user->save()) {
             $rs['ret'] = 0;
             $rs['msg'] = "修改失败";
