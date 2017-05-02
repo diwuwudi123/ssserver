@@ -5,7 +5,6 @@ namespace App\Services;
 
 use App\Models\PasswordReset;
 use App\Utils\Tools;
-use App\Services\Config;
 
 /***
  * Class Password
@@ -13,7 +12,7 @@ use App\Services\Config;
  */
 class Password
 {
-    const REST_URL = 'http://api.sendcloud.net/apiv2/mail/sendtemplate';
+    const REST_URL = 'http://api.sendcloud.net/apiv2/mail/send';
 
     /**
      * @param $email string
@@ -32,10 +31,9 @@ class Password
         $subject  = Config::get('appName') . "重置密码,你是猪吗,竟然把密码都忘了";
         $rest_url = Config::get('baseUrl') . "/password/token/" . $pwdRst->token;
         $user_name= $user->user_name;
-
         $html     = "<p>&nbsp;</p>
 
-                <p>哈哈哈 {$name}&nbsp;你是猪吗 竟然把网站的密码忘了</p>
+                <p>哈哈哈 ".$user_name."&nbsp;你是猪吗 竟然把网站的密码忘了</p>
 
                 <p>还好我大发慈悲的告诉你</p>
 
@@ -45,7 +43,7 @@ class Password
 
                 <p>你是猪吗 这次改完密码千万要记住了</p>";
 
-        if ($this->send_mail($email, $subject, $html)) {
+        if (self::send_mail($email, $subject, $html)) {
             return true;
         }
         return false;
@@ -55,25 +53,26 @@ class Password
     {
 
     }
-    public function send_mail($to_user, $subject, $html)
+    public static function send_mail($to_user, $subject, $html)
     {
         $post_data = [
             'apiUser'               => Config::get('apiUser'),
             'apiKey'                => Config::get('apiKey'),
-            'from'                  => Config::get('mail_from'),,
+            'from'                  => Config::get('mail_from'),
             'to'                    => $to_user,
             'subject'               => $subject,
             'html'                  => $html,
         ];
+        $rest_url = Config::get('rest_url');
         $ch = curl_init();
-    　　curl_setopt($ch, CURLOPT_URL, self::REST_URL);
-    　　curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    　　curl_setopt($ch, CURLOPT_POST, 1);
-    　　curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-    　　$result = curl_exec($ch);
-    　　curl_close($ch);
-    　　//打印获得的数据
-        $result = json_decode($result)
+        curl_setopt($ch, CURLOPT_URL, $rest_url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        //打印获得的数据
+        $result = json_decode($result);
         if ($result && $result->result === true && $result->statusCode == 200) 
         {
             return true;
