@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Models\PasswordReset;
 use App\Utils\Tools;
+use App\Services\Config;
 
 /***
  * Class Password
@@ -12,11 +13,13 @@ use App\Utils\Tools;
  */
 class Password
 {
+    const REST_URL = 'http://api.sendcloud.net/apiv2/mail/sendtemplate';
+
     /**
      * @param $email string
      * @return bool
      */
-    public static function sendResetEmail($email)
+    public static function sendResetEmail($email, $user)
     {
         $pwdRst = new PasswordReset();
         $pwdRst->email = $email;
@@ -26,23 +29,55 @@ class Password
         if (!$pwdRst->save()) {
             return false;
         }
-        $subject = Config::get('appName') . "重置密码";
-        $resetUrl = Config::get('baseUrl') . "/password/token/" . $pwdRst->token;
-        try {
-            Mail::send($email, $subject, 'password/reset.tpl', [
-                "resetUrl" => $resetUrl
-            ], [
-                //BASE_PATH.'/public/assets/email/styles.css'
-            ]);
-        } catch (Exception $e) {
-            return false;
+        $subject  = Config::get('appName') . "重置密码,你是猪吗,竟然把密码都忘了";
+        $rest_url = Config::get('baseUrl') . "/password/token/" . $pwdRst->token;
+        $user_name= $user->user_name;
+
+        $html     = "<p>&nbsp;</p>
+
+                <p>哈哈哈 {$name}&nbsp;你是猪吗 竟然把网站的密码忘了</p>
+
+                <p>还好我大发慈悲的告诉你</p>
+
+                <p>点击它--------->>>>>>> {$rest_url} <<<<<<<---------点击它 </p>
+
+                <p>哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈</p>
+
+                <p>你是猪吗 这次改完密码千万要记住了</p>";
+
+        if ($this->send_mail($email, $subject, $html)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public static function resetBy($token, $password)
     {
 
     }
-
+    public function send_mail($to_user, $subject, $html)
+    {
+        $post_data = [
+            'apiUser'               => Config::get('apiUser'),
+            'apiKey'                => Config::get('apiKey'),
+            'from'                  => Config::get('mail_from'),,
+            'to'                    => $to_user,
+            'subject'               => $subject,
+            'html'                  => $html,
+        ];
+        $ch = curl_init();
+    　　curl_setopt($ch, CURLOPT_URL, self::REST_URL);
+    　　curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    　　curl_setopt($ch, CURLOPT_POST, 1);
+    　　curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+    　　$result = curl_exec($ch);
+    　　curl_close($ch);
+    　　//打印获得的数据
+        $result = json_decode($result)
+        if ($result && $result->result === true && $result->statusCode == 200) 
+        {
+            return true;
+        }
+        return false;
+    }
 }
